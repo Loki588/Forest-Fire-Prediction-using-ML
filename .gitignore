@@ -1,0 +1,7 @@
+# Ignore Virtual Environment
+env/
+venv/
+__pycache__/
+*.pyd
+*.dll
+*.exe
