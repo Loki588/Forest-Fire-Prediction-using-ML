@@ -319,6 +319,34 @@ def main():
     st.set_page_config(page_title="Forest Fire Prediction", layout="wide")
     init_db()
 
+    with st.sidebar:
+         st.markdown("""
+            <style>
+                .stLogo {
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+                }
+                .stLogo img {
+                    width: 600px !important;  /* Adjust the width as needed */
+                    height: auto !important;  /* Maintain aspect ratio */
+                    max-width: 100% !important;  /* Ensure it doesn't overflow */
+                }
+            </style>
+        """, unsafe_allow_html=True)
+
+
+        # Add logo to sidebar
+         st.logo(
+            image="forest logo.png",  # Replace with your logo URL
+            size="large",
+            link=None, # Optional website link
+            icon_image=None
+        )
+
+    
+
+
     # Add background image and welcome message
     if "user_id" not in st.session_state:
         st.markdown(
