@@ -183,29 +183,38 @@ def generate_pdf(features, values, prediction, barplot_path, histplot_path):
     pdf.output(pdf_path, "F")
     return pdf_path
 
+# ✅ Prediction Logic
 if st.button("🚀 Predict Fire Risk"):
-    input_data = np.array([[X, Y, FFMC, DMC, DC, ISI, temperature, humidity, wind_speed, rain, month_encoded, day_encoded]])
-    prediction = (rf_model.predict(input_data)[0] if model_choice == "Random Forest" else nn_model.predict(input_data)[0][0]) if rf_model and nn_model else None
-   
-    if prediction is not None:
-        # Display the result message
-        if prediction > 0:
-            st.error(f"High risk of fire! Predicted: {prediction:.2f} hectares")
+    # Check if all input fields are at their default values
+    if X == 0 and Y == 0 and FFMC == 0.0 and DMC == 0.0 and DC == 0.0 and ISI == 0.0 and temperature == -10.0 and humidity == 0 and wind_speed == 0.0 and rain == 0.0:
+        st.warning("Please enter valid input values before making a prediction.")
+    else:
+        # Prepare input data for prediction
+        input_data = np.array([[X, Y, FFMC, DMC, DC, ISI, temperature, humidity, wind_speed, rain, month_encoded, day_encoded]])
+        
+        # Make prediction based on the selected model
+        if model_choice == "Random Forest":
+            prediction = rf_model.predict(input_data)[0]
         else:
-            st.success("Low risk of fire.")
-       
+            prediction = nn_model.predict(input_data)[0][0]
+        
+        # Display the prediction result
+        st.success(f"🔥 Predicted Fire Spread: {prediction:.2f} hectares")
+
+        # Define features and values for visualization and PDF generation
+        features = ["X", "Y", "FFMC", "DMC", "DC", "ISI", "Temp", "Humidity", "Wind Speed", "Rain", "Month", "Day"]
+        values = [X, Y, FFMC, DMC, DC, ISI, temperature, humidity, wind_speed, rain, month_encoded, day_encoded]
+
         # Display the feature chart
         st.subheader("Input Features")
         fig, ax = plt.subplots(figsize=(8, 6))
-        features = ["X", "Y", "FFMC", "DMC", "DC", "ISI", "Temp", "Humidity", "Wind Speed", "Rain", "Month", "Day"]
-        values = [X, Y, FFMC, DMC, DC, ISI, temperature, humidity, wind_speed, rain, month_encoded, day_encoded]
         sns.barplot(x=features, y=values, palette="coolwarm", ax=ax)
         ax.set_ylabel("Value")
         ax.set_xticklabels(features, rotation=45)
         st.pyplot(fig)
         barplot_path = "barplot.png"
         fig.savefig(barplot_path, bbox_inches="tight")
-       
+
         # Display the prediction distribution chart
         st.subheader("Prediction Distribution")
         fig2, ax2 = plt.subplots(figsize=(8, 6))
@@ -215,7 +224,7 @@ if st.button("🚀 Predict Fire Risk"):
         st.pyplot(fig2)
         histplot_path = "histplot.png"
         fig2.savefig(histplot_path, bbox_inches="tight")
-       
+
         # Generate and provide the PDF download link
         pdf_path = generate_pdf(features, values, prediction, barplot_path, histplot_path)
         with open(pdf_path, "rb") as file:
@@ -224,10 +233,7 @@ if st.button("🚀 Predict Fire Risk"):
 # ✅ Compare Models Button
 if st.button("🔍 Compare Models"):
     # Collect input data
-    input_data_comparison = np.array([[
-        X, Y, FFMC, DMC, DC, ISI, temperature,
-        humidity, wind_speed, rain, month_encoded, day_encoded
-    ]])
+    input_data_comparison = np.array([[X, Y, FFMC, DMC, DC, ISI, temperature, humidity, wind_speed, rain, month_encoded, day_encoded]])
 
     # Get predictions
     rf_prediction = rf_model.predict(input_data_comparison)[0]
@@ -263,27 +269,18 @@ if st.button("🔍 Compare Models"):
     # 2. Prediction Comparison Visualization
     st.subheader("📈 Prediction Comparison")
     fig1, ax1 = plt.subplots(figsize=(10, 5))
-    sns.barplot(
-        x=["Random Forest", "Neural Network"],
-        y=[rf_prediction, nn_prediction],
-        palette="viridis"
-    )
+    sns.barplot(x=["Random Forest", "Neural Network"], y=[rf_prediction, nn_prediction], palette="viridis")
     ax1.set_ylabel("Predicted Fire Spread (Hectares)")
     ax1.set_title("Model Predictions Comparison")
     st.pyplot(fig1)
 
     # 3. Feature Importance (Random Forest)
     st.subheader("🔑 Feature Importance (Random Forest)")
-   
-    # Check if the model is a GridSearchCV object
     if hasattr(rf_model, "best_estimator_"):
         best_rf_model = rf_model.best_estimator_
-       
         if hasattr(best_rf_model, "feature_importances_"):
-            features = ["X", "Y", "FFMC", "DMC", "DC", "ISI",
-                       "Temp", "Humidity", "Wind", "Rain", "Month", "Day"]
+            features = ["X", "Y", "FFMC", "DMC", "DC", "ISI", "Temp", "Humidity", "Wind", "Rain", "Month", "Day"]
             importance = best_rf_model.feature_importances_
-           
             fig2, ax2 = plt.subplots(figsize=(10, 6))
             sns.barplot(x=importance, y=features, palette="rocket")
             ax2.set_title("Relative Feature Importance")
@@ -297,7 +294,6 @@ if st.button("🔍 Compare Models"):
     # 4. Error Distribution Comparison
     st.subheader("📉 Error Distribution Analysis")
     col1, col2 = st.columns(2)
-   
     with col1:
         st.write("**Random Forest Error Profile**")
         st.write("- MAE: 12.34 hectares")
@@ -321,5 +317,3 @@ if st.button("🔍 Compare Models"):
         2. Using ensemble prediction
         3. Validating with domain experts
         """)
-   
-    # -- End of Enhanced Section --

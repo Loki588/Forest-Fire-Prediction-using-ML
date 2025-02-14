@@ -7,10 +7,10 @@ from datetime import datetime, timedelta
 import plotly.express as px
 from concurrent.futures import ThreadPoolExecutor
 from streamlit.components.v1 import html
+from config import GOOGLE_MAPS_API_KEY, NASA_FIRMS_API_KEY
 
 # API Keys (Replace with your own)
-NASA_FIRMS_API_KEY = "2402ceb75d735d32221a262c701f504e"
-GOOGLE_MAPS_API_KEY = "AIzaSyDCAHi6TC5mENcCeMJyGwVetFdZlbBse7Y"
+
 
 # ------------------------- Helper Functions ------------------------- #
 @st.cache_data(ttl=3600)
