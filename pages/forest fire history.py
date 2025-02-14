@@ -7,7 +7,7 @@ from datetime import datetime, timedelta
 import plotly.express as px
 from concurrent.futures import ThreadPoolExecutor
 from streamlit.components.v1 import html
-from config import GOOGLE_MAPS_API_KEY, NASA_FIRMS_API_KEY
+from config import GOOGLE_MAPS_API_KEY,FIRMS_API_KEY
 
 # API Keys (Replace with your own)
 
@@ -154,7 +154,7 @@ def main():
             # Fetch data
             main_url = "https://firms.modaps.eosdis.nasa.gov/api/area/csv"
             source = "VIIRS_SNPP_NRT"
-            fire_data, data_found = fetch_data_parallel(main_url, NASA_FIRMS_API_KEY, 
+            fire_data, data_found = fetch_data_parallel(main_url,FIRMS_API_KEY, 
                                                       source, area_coords, start_date, end_date)
             
             if not data_found:
